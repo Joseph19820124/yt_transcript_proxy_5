@@ -1,8 +1,7 @@
 import functions_framework
 import requests
+import os
 from flask import jsonify, abort
-
-RAPIDAPI_KEY = "你的_RAPIDAPI_KEY"  # 建議用環境變數存更安全
 
 @functions_framework.http
 def transcript_proxy(request):
@@ -20,6 +19,11 @@ def transcript_proxy(request):
             return jsonify({"error": "Missing URL"}), 400
     except Exception as e:
         return jsonify({"error": "Bad request", "detail": str(e)}), 400
+
+    # 從環境變數取得 RapidAPI 金鑰
+    RAPIDAPI_KEY = os.environ.get("RAPIDAPI_KEY")
+    if not RAPIDAPI_KEY:
+        return jsonify({"error": "Missing RAPIDAPI_KEY env"}), 500
 
     params = {
         "url": yt_url,
